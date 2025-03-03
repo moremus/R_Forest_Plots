@@ -1,0 +1,72 @@
+---
+title: "Forest_Plot"
+author: "Mark Oremus"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load packages
+```{r}
+library(ggplot2)
+library(ggpubr)
+```
+
+# Sex
+
+## Create data frame with effect sizes and confidence intervals for each level of effect modification variable of interest
+```{r}
+a_sex<-data.frame(SEX=c(0, 1),index=1:2, Effect=c(100.47, 100.21), lower=c(100.10, 99.86), upper=c(100.84, 100.56))
+```
+
+Assumes 0 = Female and 1 = Male.
+
+*index=1:2* because the y-axis contains two points (female and male).
+
+## Create labels for y-axis
+```{r}
+sex_l<-c("Female", "Male") # Enter in the proper order: 0 = Female, 1 = Male
+```
+
+## Plot effect sizes and confidence intervals for each level, with xintercept=your unstratified beta coefficient value
+```{r}
+for_sex<-ggplot(data=a_sex, aes(y=index, x=Effect, xmin=lower, xmax=upper)) + geom_point() + geom_vline(xintercept=100.30, colour="blue", linetype="dashed") +geom_errorbarh(height=.1) + scale_x_continuous(name="") +scale_y_reverse(name="", breaks=1:2, labels=sex_l) + theme_classic() + ggtitle("A Path by Sex")
+plot(for_sex)
+```
+
+# Age Group
+
+## Create data frame with effect sizes and confidence intervals for each level of effect modification variable of interest
+```{r}
+a_age<-data.frame(AGE=c(0, 1, 2, 3),index=1:4, Effect=c(79, 90, 94, 96), lower=c(49.6, 60.6, 64.6, 66.6), upper=c(108.4, 119.4, 123.4, 125.4))
+```
+
+Assumes 0 = 45-54, 1 = 55-64, 2 = 65-74, 3 = 75+.
+
+*index=1:4* because the y-axis contains four points (one point for each of four age groups).
+
+## Create labels for y-axis
+```{r}
+age_l<-c("45-54 years", "55-64 years", "65-74 years", "75+ years") # Enter in the proper order: 0 = Female, 1 = Male
+```
+
+## Plot effect sizes and confidence intervals for each level, with xintercept=your unstratified beta coefficient value
+```{r}
+for_age<-ggplot(data=a_age, aes(y=index, x=Effect, xmin=lower, xmax=upper)) + geom_point() + geom_vline(xintercept=82.7, colour="blue", linetype="dashed") +geom_errorbarh(height=.1) + scale_x_continuous(name="") +scale_y_reverse(name="", breaks=1:4, labels=age_l) + theme_classic() + ggtitle("A Path by Age Group")
+plot(for_age)
+```
+
+# Combine the plots
+
+```{r}
+ggarrange(for_sex, for_age, labels = c("A", "B"), nrow=1, ncol=2)
+```
+
+The combined plot can be re-sized and exported as a .png file using the *ggexport* function.
